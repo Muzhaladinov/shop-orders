@@ -73,4 +73,16 @@ class Stage3FullStackIT {
         assertThat(products.findById(p.getId()).orElseThrow().getStock()).isEqualTo(1);
         assertThat(orders.count()).isZero();
     }
+
+    @Test
+    void createProduct_thenListIt() throws Exception {
+        mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Ручка\",\"price\":50,\"stock\":100}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Ручка"));
+
+        mvc.perform(get("/api/products"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].stock").value(100));
+    }
 }
